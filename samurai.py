@@ -43,9 +43,32 @@ def animacao_personagem():
 def animacao_inimigo():
     global inimigo_index
 
-    inimigo_index += 0.10
-    if inimigo_index > len(inimigo_parado_superficie) -1:
+    inimigo_retangulo.x -= movimento_personagem
+
+    # Limita aonde o retangulo do jogador pode ir na tela
+    if inimigo_retangulo.right >= 1100:
+        inimigo_retangulo.right = 1100
+    elif inimigo_retangulo.left <= -120:
+        inimigo_retangulo.left = -120
+
+    if movimento_personagem == 0:
+        inimgio_superficie = inimigo_parado_superficie
+    else:
+        inimgio_superficie = inimigo_andando_superficie
+
+    # Avança para o próximo frame
+    inimigo_index += 0.12
+    if inimigo_index > len(inimgio_superficie) -1 : # Len vem de Lenght
         inimigo_index = 0
+
+    if direcao_personagem == 1:
+        inimigo = pygame.transform.flip(inimgio_superficie[int(inimigo_index)], True, False)
+    else:
+        inimigo = inimgio_superficie[int(inimigo_index)]
+
+    # Desenha o jogador na tela
+    tela.blit(inimigo, inimigo_retangulo)
+    
 
 ##
 ## Importa os arquivos necessário
@@ -106,17 +129,17 @@ inimigo_andando_superficie = []
 # Carrega as imagens do Inimigo Parado
 for imagem_inimigo in range (1, 7):
     img_inimigo = pygame.image.load(f'assets/boss/01_demon_idle/demon_idle_{imagem_inimigo}.png').convert_alpha()
-    img_inimigo = pygame.transform.scale(img_inimigo, (380, 380))
+    img_inimigo = pygame.transform.scale(img_inimigo, (420, 420))
     inimigo_parado_superficie.append(img_inimigo)
 
 # Carrega as imagens do Inimigo Andando
 for image_inimigo in range (1, 13):
-    img_inimigo = pygame.image.load(f'assets/boss/02_demon_idle/demon_walk_{imagem_inimigo}.png').convert_alpha()
-    img_inimigo = pygame.transform.scale(img_inimigo, (380, 380))
+    img_inimigo = pygame.image.load(f'assets/boss/02_demon_walk/demon_walk_{imagem_inimigo}.png').convert_alpha()
+    img_inimigo = pygame.transform.scale(img_inimigo, (420, 420))
     inimigo_andando_superficie.append(img_inimigo)
 
 # Retângulo do Inimigo
-inimigo_retangulo = inimigo_parado_superficie[inimigo_index].get_rect(center = (800, 320))
+inimigo_retangulo = inimigo_parado_superficie[inimigo_index].get_rect(center = (800, 280))
 
 
 # Cria um relógio para controlar os FPS
@@ -149,6 +172,7 @@ while True:
                 movimento_personagem = 0
             if evento.key == pygame.K_LEFT:
                 movimento_personagem = 0
+        
         
 
              
