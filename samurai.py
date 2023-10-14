@@ -40,6 +40,9 @@ def animacao_personagem():
     # Desenha o jogador na tela
     tela.blit(jogador, jogador_retangulo)
 
+def ataque_personagem():
+    pass
+
 def animacao_inimigo():
     global inimigo_index
 
@@ -196,6 +199,9 @@ while True:
 
     # Chama a função animação do personagem
     animacao_personagem()
+
+    # Chama a função animação ataque do personagem
+    ataque_personagem()
 
     # Chama a função animação do Inimigo
     animacao_inimigo()
