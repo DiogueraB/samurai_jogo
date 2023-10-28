@@ -87,6 +87,7 @@ arvore = pygame.image.load('assets/fundo/fundo_4.png').convert_alpha()
 tronco = pygame.image.load('assets/fundo/fundo_5.png').convert_alpha()
 fundo_tronco = pygame.image.load('assets/fundo/fundo_6.png').convert_alpha()
 cor_fundo = pygame.image.load('assets/fundo/fundo_7.png').convert_alpha()
+teste = pygame.image.load('assets/fundo/fundo_7.png').convert_alpha()
 
 # Transforma o tamanho da imagem de fundo
 chao = pygame.transform.scale (chao, tamanho)
