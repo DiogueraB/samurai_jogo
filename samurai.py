@@ -46,7 +46,7 @@ def animacao_personagem():
     # Desenha o jogador na tela
     tela.blit(jogador, jogador_retangulo)
 
-def animacao_ataque_personagem():
+def ataque_personagem():
     global personagem_esta_atacando
     global movimento_personagem
 
@@ -227,15 +227,9 @@ while True:
             ## Jogador 1 (Samurai)
             if evento.key == pygame.K_d: # Jogador 1 para de se movimentar para direita
                 movimento_personagem = 0
-
-                if evento.key == pygame.K_k:
-                    personagem_ataque = 0
                     
             if evento.key == pygame.K_a: # Jogador 1 para de se movimentar para esquerda
                 movimento_personagem = 0
-
-                if evento.key == pygame.K_k:
-                    personagem_ataque = 0
 
             ## Jogador 2 (Boss)
             if evento.key == pygame.K_RIGHT: # Jogador 2 para de se movimentar para direita
@@ -259,7 +253,7 @@ while True:
     animacao_personagem()
 
     # Chama a função de animação ataque do jogador
-    animacao_ataque_personagem()
+    ataque_personagem()
 
     # Chama a função animação do Inimigo
     animacao_inimigo()
