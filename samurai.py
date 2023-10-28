@@ -47,19 +47,18 @@ def animacao_personagem():
     tela.blit(jogador, jogador_retangulo)
 
 def ataque_personagem():
-    global personagem_esta_atacando
-    global movimento_personagem
+    global personagem_esta_atacando, movimento_personagem
 
     if personagem_esta_atacando:
         tempo_ataque = pygame.time.get_ticks() - inicio_ataque_personagem
         
         movimento_personagem = 0
-        
+
         if tempo_ataque > 400:
             personagem_esta_atacando = False
     
 def animacao_inimigo():
-    global inimigo_index
+    global inimigo_index, inimigo_esta_atacando
 
     inimigo_retangulo.x -= movimento_inimigo
 
@@ -69,8 +68,12 @@ def animacao_inimigo():
     elif inimigo_retangulo.left <= -120:
         inimigo_retangulo.left = -120
 
-    if movimento_inimigo == 0:
+    if movimento_inimigo == 0 and not inimigo_esta_atacando:
         inimigo_superficie = inimigo_parado_superficie
+
+    elif inimigo_esta_atacando:
+        inimigo_superficie = inimigo_atacando_superficie
+
     else:
         inimigo_superficie = inimigo_andando_superficie
 
@@ -87,6 +90,9 @@ def animacao_inimigo():
     # Desenha o jogador na tela
     tela.blit(inimigo, inimigo_retangulo)
     
+def ataque_inimigo():
+    pass
+
 ##
 ## Importa os arquivos necessário
 ##
@@ -172,6 +178,8 @@ for imagem_inimigo in range (1, 16):
 
 # Retângulo do Inimigo
 inimigo_retangulo = inimigo_parado_superficie[inimigo_index].get_rect(center = (800, 280))
+# Retângulo do Ataque
+ataque_retangulo_inimigo = pygame.Rect(inimigo_retangulo.left + 50, inimigo_retangulo.top, 30,10) 
 
 # Cria um relógio para controlar os FPS
 relogio = pygame.time.Clock()
@@ -180,12 +188,15 @@ relogio = pygame.time.Clock()
 movimento_personagem = 0
 direcao_personagem = 0
 
-# Ataque jogador
+# Ataque jogador ( Jogador 1 )
 personagem_esta_atacando = False
 
 # Movimento Inimigo
 movimento_inimigo = 0
 direcao_inimigo = 0
+
+# Ataque Inimigo ( Jogador 2 )
+inimigo_esta_atacando = False
 
 # Loop Principal 
 while True:
@@ -220,6 +231,12 @@ while True:
                 movimento_inimigo = 6
                 direcao_inimigo = 0
 
+            if evento.key == pygame.K_KP_2:
+                if not inimigo_esta_atacando:
+                    inimigo_index = 0 
+                    inimigo_esta_atacando = True
+                    inicio_ataque_inimigo = pygame.time.get_ticks()
+
         if evento.type == pygame.KEYUP:
             ## Jogador 1 (Samurai)
             if evento.key == pygame.K_d: # Jogador 1 para de se movimentar para direita
@@ -249,7 +266,7 @@ while True:
     # Chama a função animação do personagem
     animacao_personagem()
 
-    # Chama a função de animação ataque do jogador
+    # Chama a função de ataque do jogador ( Jogador 1 )
     ataque_personagem()
 
     # Chama a função animação do Inimigo
