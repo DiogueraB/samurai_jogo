@@ -13,6 +13,7 @@ pygame.display.set_caption("Samurai")
 
 def animacao_personagem():
     global jogador_index
+    global personagem_esta_atacando
 
     jogador_retangulo.x += movimento_personagem
 
@@ -22,8 +23,12 @@ def animacao_personagem():
     elif jogador_retangulo.left <= -120:
         jogador_retangulo.left = -120
 
-    if movimento_personagem == 0: # Jogador está parado
+    if movimento_personagem == 0 and not personagem_esta_atacando: # Jogador está parado
         jogador_superficie = jogador_parado_superficie
+
+    elif personagem_esta_atacando:
+        jogador_superficie = jogador_atacando_superficie
+
     else: # Jogador está andando
         jogador_superficie = jogador_andando_superficie
 
@@ -37,18 +42,30 @@ def animacao_personagem():
     else:
         jogador = jogador_superficie[int(jogador_index)]
 
+
     # Desenha o jogador na tela
     tela.blit(jogador, jogador_retangulo)
 
-def ataque_personagem():
-    pass
+def animacao_ataque_personagem():
+    global personagem_esta_atacando
+    global movimento_personagem
 
+    if personagem_esta_atacando:
+        tempo_ataque = pygame.time.get_ticks() - inicio_ataque_personagem
+        
+        movimento_personagem = 0
+
+        print (tempo_ataque)
+
+        if tempo_ataque > 400:
+            personagem_esta_atacando = False
+    
 def animacao_inimigo():
     global inimigo_index
 
     inimigo_retangulo.x -= movimento_inimigo
 
-    # Limita aonde o retangulo do jogador pode ir na tela
+    # Limita aonde o retangulo do inimigo pode ir na tela
     if inimigo_retangulo.right >= 1100:
         inimigo_retangulo.right = 1100
     elif inimigo_retangulo.left <= -120:
@@ -72,9 +89,6 @@ def animacao_inimigo():
     # Desenha o jogador na tela
     tela.blit(inimigo, inimigo_retangulo)
     
-def ataque_inimigo():
-    pass
-
 ##
 ## Importa os arquivos necessário
 ##
@@ -103,6 +117,7 @@ jogador_index = 0
 jogador_parado_superficie = []
 jogador_andando_superficie = []
 jogador_atacando_superficie = []
+jogador_pulando_superficie = []
 
 # Carrega as imagens do jogador parado
 for imagem in range (1, 6):
@@ -122,10 +137,17 @@ for imagem in range (1, 5):
     img = pygame.transform.scale(img, (320, 320))
     jogador_atacando_superficie.append(img)
 
+# Carrega as imagens do jogador pulando
+for imagem in range (1, 8):
+    img = pygame.image.load(f'assets/jogador/pulo/pulo_{imagem}.png').convert_alpha()
+    img = pygame.transform.scale(img, (320, 320))
+    jogador_pulando_superficie.append(img)
+
 # Retângulo do Jogador
 jogador_retangulo = jogador_parado_superficie[jogador_index].get_rect(center = (100, 330))
 # Retângulo da Espada
 ataque_retangulo = pygame.Rect(jogador_retangulo.left + 50, jogador_retangulo.top, 30,10)
+
 
 ## Carrega as imagens do Inimigo(Boss)
 inimigo_index = 0
@@ -160,6 +182,10 @@ relogio = pygame.time.Clock()
 movimento_personagem = 0
 direcao_personagem = 0
 
+# Ataque jogador
+personagem_esta_atacando = False
+direcao_ataque_personagem = 0
+
 # Movimento Inimigo
 movimento_inimigo = 0
 direcao_inimigo = 0
@@ -173,22 +199,53 @@ while True:
             exit()
 
         if evento.type == pygame.KEYDOWN:
-            if evento.key == pygame.K_RIGHT:
+            ## Jogador 1 (Samurai)
+            if evento.key == pygame.K_d: # Jogador 1 se movimenta para direita
                 movimento_personagem = 6
-                direcao_personagem = 0
+                direcao_personagem = 0  
 
-            if evento.key == pygame.K_LEFT:
+            if evento.key == pygame.K_a: # Jogador 1 se movimenta para esquerda
                 movimento_personagem = -6
                 direcao_personagem = 1
 
+            if evento.key == pygame.K_k:
+                if not personagem_esta_atacando:
+                    jogador_index = 0
+                    personagem_esta_atacando = True
+                    inicio_ataque_personagem = pygame.time.get_ticks()
+            
+            ## Jogador 2 (Boss)
+            if evento.key == pygame.K_RIGHT: # Jogador 2 se movimenta para direita
+                movimento_inimigo = -6
+                direcao_inimigo = 1
+            
+            if evento.key == pygame.K_LEFT: # Jogador 2 se movimenta para esquerda
+                movimento_inimigo = 6
+                direcao_inimigo = 0
+
         if evento.type == pygame.KEYUP:
-            if evento.key == pygame.K_RIGHT:
+            ## Jogador 1 (Samurai)
+            if evento.key == pygame.K_d: # Jogador 1 para de se movimentar para direita
                 movimento_personagem = 0
-            if evento.key == pygame.K_LEFT:
+
+                if evento.key == pygame.K_k:
+                    personagem_ataque = 0
+                    
+            if evento.key == pygame.K_a: # Jogador 1 para de se movimentar para esquerda
                 movimento_personagem = 0
+
+                if evento.key == pygame.K_k:
+                    personagem_ataque = 0
+
+            ## Jogador 2 (Boss)
+            if evento.key == pygame.K_RIGHT: # Jogador 2 para de se movimentar para direita
+                movimento_inimigo = 0
+            if evento.key == pygame.K_LEFT: # Jogador 2 para de se movimentar para esquerda
+                movimento_inimigo = 0
         
+    
+
         
-             
     # Desenha o fundo na tela
     tela.blit(cor_fundo, (0, 0))
     tela.blit(fundo_tronco, (0, 0))
@@ -201,14 +258,11 @@ while True:
     # Chama a função animação do personagem
     animacao_personagem()
 
-    # Chama a função animação ataque do personagem
-    ataque_personagem()
+    # Chama a função de animação ataque do jogador
+    animacao_ataque_personagem()
 
     # Chama a função animação do Inimigo
     animacao_inimigo()
-
-    # Função ataque do Inimigo
-    ataque_inimigo()
 
     # Atualiza a tela com o conteúdo
     pygame.display.update()
