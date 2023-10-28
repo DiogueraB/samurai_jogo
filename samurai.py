@@ -54,9 +54,7 @@ def ataque_personagem():
         tempo_ataque = pygame.time.get_ticks() - inicio_ataque_personagem
         
         movimento_personagem = 0
-
-        print (tempo_ataque)
-
+        
         if tempo_ataque > 400:
             personagem_esta_atacando = False
     
@@ -184,7 +182,6 @@ direcao_personagem = 0
 
 # Ataque jogador
 personagem_esta_atacando = False
-direcao_ataque_personagem = 0
 
 # Movimento Inimigo
 movimento_inimigo = 0
